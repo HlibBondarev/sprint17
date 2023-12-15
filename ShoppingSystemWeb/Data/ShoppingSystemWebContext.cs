@@ -15,6 +15,7 @@ namespace ShoppingSystemWeb.Data
 		public ShoppingSystemWebContext (DbContextOptions<ShoppingSystemWebContext> options)
             : base(options)
         {
+			//Database.EnsureCreated();
         }
 
 		public ShoppingSystemWebContext(DbContextOptionsBuilder<ShoppingSystemWebContext> option)
@@ -22,6 +23,6 @@ namespace ShoppingSystemWeb.Data
 			this.option = option;
 		}
 
-		public DbSet<ShoppingSystemWeb.Models.Product> Product { get; set; }
+		public virtual DbSet<ShoppingSystemWeb.Models.Product> Product { get; set; }
     }
 }
