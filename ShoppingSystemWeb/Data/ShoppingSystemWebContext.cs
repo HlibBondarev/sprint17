@@ -8,20 +8,21 @@ using ShoppingSystemWeb.Models;
 
 namespace ShoppingSystemWeb.Data
 {
-    public class ShoppingSystemWebContext : DbContext
+    public class ShoppingSystemWebContext : DbContext, IShoppingSystemWebContext
     {
-		private DbContextOptionsBuilder<ShoppingSystemWebContext> option;
+		//private DbContextOptionsBuilder<ShoppingSystemWebContext> option;
 
 		public ShoppingSystemWebContext (DbContextOptions<ShoppingSystemWebContext> options)
             : base(options)
         {
+			Database.EnsureCreated();
         }
 
-		public ShoppingSystemWebContext(DbContextOptionsBuilder<ShoppingSystemWebContext> option)
-		{
-			this.option = option;
-		}
+		//public ShoppingSystemWebContext(DbContextOptionsBuilder<ShoppingSystemWebContext> option)
+		//{
+		//	this.option = option;
+		//}
 
-		public DbSet<ShoppingSystemWeb.Models.Product> Product { get; set; }
+		public virtual DbSet<Product> Product { get; set; }
     }
 }

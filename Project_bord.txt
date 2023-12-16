@@ -1,0 +1,61 @@
+1. Notice what's logic being tested (services, controllers, etc).
+a) services: - PaginatedList;
+b) controllers:
+- ProductsController;
+- HomeComtroller;
+- GreetingController;
+c) models:
+- Product;
+-ErrorViewModel;
+- SeedData;
+- SortStateEnum.
+
+
+2. Use Moq framework to isolate units to be tested from the underlying dependencies;
+a) Create the private Mocker class. It must encapsulate  construction and configuration 
+of all mocks and the system under test:
+- Mock<ShoppingSystemWebContext> _mockContext;
+- Mock<DbSet<Product>> _mockSet;
+b) Use the fluent builder pattern for creating Mocker class.
+
+
+3. Test the methods at least of one of the controllers (ProductsController).
+a)Index(int? pageNumber, string searchString):
+- check  filter the list of products;
+- check  pagination to products Index page;
+- check the returned result;
+b) Create(Product product) (POST: Products/Create):
+- check validation of Product parameter;
+- check the returned result;
+c) Details(int? id) (GET: Products/Details/5):
+- check the returned result;
+d) Edit(int? id) (GET: Products/Edit/5):
+- check validation of id parameter;
+- check the returned result;
+e) Edit(int id, Product product) (POST: Products/Edit/5):
+- check validation of id parameter;
+- check the returned result;
+f) Delete(int? id) (GET: Products/Delete/5):
+- check validation of id parameter;
+- check the returned result;
+g) DeleteConfirmed(int id) (POST: Products/Delete/5):
+- check the returned result;
+h) ProductExists(int id):
+- check call Any method of DbSet<Product> object.
+
+
+4) Test CRUD operations to DB.
+a) Create(Product product) (POST: Products/Create):
+- check calls to the Add and SaveChangesAsync methods of ShoppingSystemWebContext object;
+b) Details(int? id) (GET: Products/Details/5):
+- check call to the FirstOrDefaultAsync method of DbSet<Product> object;
+c) Edit(int? id) (GET: Products/Edit/5):
+- check call to the FindAsync method of DbSet<Product> object;
+d) Edit(int id, Product product) (POST: Products/Edit/5):
+- check calls to the Update and SaveChangesAsync methods of ShoppingSystemWebContext object;
+e)  Delete(int? id) (GET: Products/Delete/5):
+- check call to the FirstOrDefaultAsync method of DbSet<Product> object;
+f) DeleteConfirmed(int id) (POST: Products/Delete/5):
+- check calls to the FindAsync and Remove methods of DbSet<Product> object;
+- check call to the SaveChangesAsync method of ShoppingSystemWebContext object;
+
