@@ -9,9 +9,9 @@ namespace ShoppingSystemWeb.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly ShoppingSystemWebContext _context;
+        private readonly IShoppingSystemWebContext _context;
 
-        public ProductsController(ShoppingSystemWebContext context)
+        public ProductsController(IShoppingSystemWebContext context)
         {
             _context = context;
         }
@@ -20,6 +20,7 @@ namespace ShoppingSystemWeb.Controllers
         public async Task<IActionResult> Index(int? pageNumber, string searchString)
         {
             int pageSize = 3;
+
             var products = from m in _context.Product
                          select m;
 
@@ -29,7 +30,7 @@ namespace ShoppingSystemWeb.Controllers
 
 			}
 
-			return View(await PaginatedList<Product>.CreateAsync(products.AsNoTracking(), pageNumber ?? 1, pageSize));
+			return View(/*await*/ PaginatedList<Product>.Create/*Async*/(products.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         // GET: Products/Details/5
@@ -40,8 +41,8 @@ namespace ShoppingSystemWeb.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = /*await*/ _context.Product
+                .FirstOrDefault/*Async*/(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
@@ -65,7 +66,7 @@ namespace ShoppingSystemWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(product);
+                _context.Product.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -104,7 +105,7 @@ namespace ShoppingSystemWeb.Controllers
             {
                 try
                 {
-                    _context.Update(product);
+                    _context.Product.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
