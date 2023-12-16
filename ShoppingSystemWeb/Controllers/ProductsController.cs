@@ -20,6 +20,8 @@ namespace ShoppingSystemWeb.Controllers
         public async Task<IActionResult> Index(int? pageNumber, string searchString)
         {
             int pageSize = 3;
+
+
             var products = from m in _context.Product
                          select m;
 
@@ -29,7 +31,7 @@ namespace ShoppingSystemWeb.Controllers
 
 			}
 
-			return View(await PaginatedList<Product>.CreateAsync(products.AsNoTracking(), pageNumber ?? 1, pageSize));
+			return View(/*await*/ PaginatedList<Product>.Create/*Async*/(products.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         // GET: Products/Details/5
