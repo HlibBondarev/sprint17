@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ShoppingSystemWeb.Services;
 using Microsoft.EntityFrameworkCore;
+using ShoppingSystemWebTest;
 
 namespace ShoppingSystemWeb.Tests;
 
@@ -23,22 +24,27 @@ public class ProductsControllerTest
     //    Price = 13.13m
     //};
 
-    //[Fact]
-    //public async Task Index_ReturnsAViewResult_WithAListOfProducts()
-    //{
-    //    // Arrange
-    //    var mockContext = new Mock<IShoppingSystemWebContext>();
-    //    mockContext.Setup(ctx => ctx.Product);
-    //    var controller = new ProductsController(mockContext.Object);
+    [Fact]
+    public async Task Index_ReturnsAViewResult_WithAListOfProducts()
+    {
+        // Arrange
+        var mockContext = new Mock<IShoppingSystemWebContext>();
+        var mockDbSet = new Mock<DbSet<Product>>();
+        var entities = new List<Product>
+        {
+            _testProduct
+        };
+        mockContext.Setup(c => c.Product).Returns(DbContextMock.GetQueryableMockDbSet<Product>(entities));
+        var controller = new ProductsController(mockContext.Object);
 
-    //    // Act
-    //    var result = await controller.Index(null, null);
+        // Act
+        var result = await controller.Index(null, null);
 
-    //    // Assert
-    //    var viewResult = Assert.IsType<ViewResult>(result);
-    //    var model = Assert.IsAssignableFrom<PaginatedList<Product>>(viewResult.ViewData.Model);
-    //    Assert.Equal(3, model.Count);
-    //}
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsAssignableFrom<PaginatedList<Product>>(viewResult.ViewData.Model);
+        Assert.Equal(1, model.Count);
+    }
 
 
     [Fact]
