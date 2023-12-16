@@ -1,8 +1,3 @@
-using Xunit;
-using Microsoft.AspNetCore.Mvc;
-using ShoppingSystemWeb.Controllers;
-using ShoppingSystemWeb.Data;
-using ShoppingSystemWeb.Models;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
