@@ -9,7 +9,7 @@ namespace ShoppingSystemWebTest
 {
     public static class DbContextMock
     {
-        public static DbSet<T> GetQueryableMockDbSet<T>(List<T> sourceList) where T : class
+        public static Mock<DbSet<T>> GetQueryableMockDbSet<T>(List<T> sourceList) where T : class
         {
             var queryable = sourceList.AsQueryable();
 
@@ -20,7 +20,7 @@ namespace ShoppingSystemWebTest
             dbSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(() => queryable.GetEnumerator());
             dbSet.Setup(d => d.Add(It.IsAny<T>())).Callback<T>((s) => sourceList.Add(s));
 
-            return dbSet.Object;
+            return dbSet;
         }
     }
 }

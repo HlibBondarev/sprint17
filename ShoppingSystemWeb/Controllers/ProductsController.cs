@@ -21,7 +21,6 @@ namespace ShoppingSystemWeb.Controllers
         {
             int pageSize = 3;
 
-
             var products = from m in _context.Product
                          select m;
 
@@ -42,8 +41,8 @@ namespace ShoppingSystemWeb.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = /*await*/ _context.Product
+                .FirstOrDefault/*Async*/(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
