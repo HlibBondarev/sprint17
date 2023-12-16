@@ -9,7 +9,7 @@ builder.Services.AddDbContext<ShoppingSystemWebContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<IShoppingSystemWebContext, ShoppingSystemWebContext>();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

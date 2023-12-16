@@ -9,9 +9,9 @@ namespace ShoppingSystemWeb.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly ShoppingSystemWebContext _context;
+        private readonly IShoppingSystemWebContext _context;
 
-        public ProductsController(ShoppingSystemWebContext context)
+        public ProductsController(IShoppingSystemWebContext context)
         {
             _context = context;
         }
@@ -65,7 +65,7 @@ namespace ShoppingSystemWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(product);
+                _context.Product.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -104,7 +104,7 @@ namespace ShoppingSystemWeb.Controllers
             {
                 try
                 {
-                    _context.Update(product);
+                    _context.Product.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
