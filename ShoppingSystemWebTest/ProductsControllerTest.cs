@@ -1,4 +1,5 @@
 using Xunit;
+using System;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingSystemWeb.Controllers;
 using ShoppingSystemWeb.Data;
@@ -11,6 +12,8 @@ using ShoppingSystemWeb.Services;
 using Microsoft.EntityFrameworkCore;
 using ShoppingSystemWebTest;
 using ShoppingSystemWebTest.Async;
+using System.Linq.Expressions;
+using System.Net.Sockets;
 
 namespace ShoppingSystemWeb.Tests;
 
@@ -52,12 +55,35 @@ public class ProductsControllerTest
             _testProduct2,
             _testProduct3
         };
-        var mockSet = DbContextMock.GetQueryableMockDbSet(data);
+        //var mockSet = DbContextMock.GetQueryableMockDbSet(data);
 
         // Mock the ToListAsync method directly on the DbSet
-        mockSet.As<IAsyncEnumerable<Product>>()
-            .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
-            .Returns(new TestAsyncEnumerator<Product>(data.GetEnumerator()));
+        //mockSet.As<IAsyncEnumerable<Product>>()
+        //    .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+        //    .Returns(new TestAsyncEnumerator<Product>(data.GetEnumerator()));
+
+        //mockSet/*.As<IAsyncEnumerable<Product>>()*/
+        //    .Setup(m => m.CountAsync(It.IsAny<CancellationToken>()))
+        //    .Returns(Task.Factory.StartNew(()=>  data.Count));
+
+        //mockSet.As<IQueryable<Product>>()
+        //.Setup(m => m.Count(It.IsAny<Expression<Func<Product, bool>>>()))
+        //.Returns((Expression<Func<Product, bool>> predicate) => data.AsQueryable().Count(predicate));
+
+        var mockSet = new Mock<DbSet<Product>>();
+        var queryable = data.AsQueryable();
+
+        // Set up the Count method on the IQueryable interface
+        mockSet.As<IQueryable<Product>>().Setup(m => m.Provider).Returns(new TestAsyncQueryProvider<Product>(queryable.Provider));
+        mockSet.As<IQueryable<Product>>().Setup(m => m.Expression).Returns(queryable.Expression);
+        mockSet.As<IQueryable<Product>>().Setup(m => m.ElementType).Returns(queryable.ElementType);
+        mockSet.As<IQueryable<Product>>().Setup(m => m.GetEnumerator()).Returns(queryable.GetEnumerator());
+        mockSet.As<IQueryable<Product>>().Setup(m => m.Count(It.IsAny<Expression<Func<Product, bool>>>()))
+            .Returns((Expression<Func<Product, bool>> predicate) => data.Count());
+
+        //mockSet.As<IQueryable<Product>>().Setup(m => m.Count(It.IsAny<Expression<Func<Product, bool>>>()))
+        //.Returns((Expression<Func<Product, bool>> predicate) => queryable.Count(predicate));
+
 
         var mockContext = new Mock<IShoppingSystemWebContext>();
         mockContext.Setup(c => c.Product).Returns(mockSet.Object);
@@ -273,7 +299,7 @@ public class ProductsControllerTest
         var controller = new ProductsController(mockContext.Object);
 
         // Act
-        var result =await controller.DeleteConfirmed(_testId ?? 0);
+        var result = await controller.DeleteConfirmed(_testId ?? 0);
 
         // Assert
         var viewResult = Assert.IsType<RedirectToActionResult>(result);
