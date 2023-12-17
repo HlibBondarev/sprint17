@@ -30,7 +30,7 @@ namespace ShoppingSystemWeb.Controllers
 
 			}
 
-			return View(await PaginatedList<Product>.CreateAsync(products.AsNoTracking(), pageNumber ?? 1, pageSize));
+			return View(/*await*/ PaginatedList<Product>.Create/*Async*/(products.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         // GET: Products/Details/5

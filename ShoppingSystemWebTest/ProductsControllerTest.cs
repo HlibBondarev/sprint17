@@ -55,36 +55,7 @@ public class ProductsControllerTest
             _testProduct2,
             _testProduct3
         };
-        //var mockSet = DbContextMock.GetQueryableMockDbSet(data);
-
-        // Mock the ToListAsync method directly on the DbSet
-        //mockSet.As<IAsyncEnumerable<Product>>()
-        //    .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
-        //    .Returns(new TestAsyncEnumerator<Product>(data.GetEnumerator()));
-
-        //mockSet/*.As<IAsyncEnumerable<Product>>()*/
-        //    .Setup(m => m.CountAsync(It.IsAny<CancellationToken>()))
-        //    .Returns(Task.Factory.StartNew(()=>  data.Count));
-
-        //mockSet.As<IQueryable<Product>>()
-        //.Setup(m => m.Count(It.IsAny<Expression<Func<Product, bool>>>()))
-        //.Returns((Expression<Func<Product, bool>> predicate) => data.AsQueryable().Count(predicate));
-
-        var mockSet = new Mock<DbSet<Product>>();
-        var queryable = data.AsQueryable();
-
-        // Set up the Count method on the IQueryable interface
-        mockSet.As<IQueryable<Product>>().Setup(m => m.Provider).Returns(new TestAsyncQueryProvider<Product>(queryable.Provider));
-        mockSet.As<IQueryable<Product>>().Setup(m => m.Expression).Returns(queryable.Expression);
-        mockSet.As<IQueryable<Product>>().Setup(m => m.ElementType).Returns(queryable.ElementType);
-        mockSet.As<IQueryable<Product>>().Setup(m => m.GetEnumerator()).Returns(queryable.GetEnumerator());
-        mockSet.As<IQueryable<Product>>().Setup(m => m.Count(It.IsAny<Expression<Func<Product, bool>>>()))
-            .Returns((Expression<Func<Product, bool>> predicate) => data.Count());
-
-        //mockSet.As<IQueryable<Product>>().Setup(m => m.Count(It.IsAny<Expression<Func<Product, bool>>>()))
-        //.Returns((Expression<Func<Product, bool>> predicate) => queryable.Count(predicate));
-
-
+        var mockSet = DbContextMock.GetQueryableMockDbSet(data);
         var mockContext = new Mock<IShoppingSystemWebContext>();
         mockContext.Setup(c => c.Product).Returns(mockSet.Object);
 
