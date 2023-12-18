@@ -9,6 +9,7 @@ builder.Services.AddDbContext<ShoppingSystemWebContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IRepository<Product>, Repository<Product>>();
 builder.Services.AddScoped<IShoppingSystemWebContext, ShoppingSystemWebContext>();
 var app = builder.Build();
 

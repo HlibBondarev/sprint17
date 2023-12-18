@@ -1,14 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ShoppingSystemWeb.Models;
-using System.Linq.Expressions;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace ShoppingSystemWeb.Data
 {
-    public interface IRepository
+    public interface IRepository<T> where T : class
     {
-        IdbSetRepository<Product> Product { get; set; }
-
-        int SaveChanges();
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        IQueryable<T> Query();
+        Task<IQueryable<T>> GetAllAsync();
+        Task<T?> GetByIdAsync(int? id);
+        //Task AddAsync(T entity);
+        ValueTask<EntityEntry<T>> AddAsync(T entity);
+        Task UpdateAsync(T entity);
+        Task DeleteAsync(int? id);
     }
 }

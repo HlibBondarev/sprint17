@@ -9,11 +9,11 @@ namespace ShoppingSystemWeb.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly IShoppingSystemWebContext _context;
+        private readonly IRepository<Product> _productRepository;
 
-        public ProductsController(IShoppingSystemWebContext context)
+        public ProductsController(IRepository<Product> productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
 
         // GET: Products
@@ -21,16 +21,15 @@ namespace ShoppingSystemWeb.Controllers
         {
             int pageSize = 3;
 
-            var products = from m in _context.Product
-                         select m;
+            var products = await _productRepository.GetAllAsync();
 
             if (!string.IsNullOrEmpty(searchString))
-			{
-				products = products.Where(s => s.Title!.Contains(searchString) || s.Category!.Contains(searchString));
+            {
+                products = products.Where(s => s.Title!.Contains(searchString) || s.Category!.Contains(searchString));
 
-			}
+            }
 
-			return View(await PaginatedList<Product>.CreateAsync(products.AsNoTracking(), pageNumber ?? 1, pageSize));
+            return View(/*await*/ PaginatedList<Product>.Create/*Async*/(products.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         // GET: Products/Details/5
@@ -41,8 +40,7 @@ namespace ShoppingSystemWeb.Controllers
                 return NotFound();
             }
 
-            var product = /*await*/ _context.Product
-                .FirstOrDefault/*Async*/(m => m.Id == id);
+            var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -66,8 +64,7 @@ namespace ShoppingSystemWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Product.Add(product);
-                await _context.SaveChangesAsync();
+                await _productRepository.AddAsync(product);
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -81,7 +78,8 @@ namespace ShoppingSystemWeb.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product.FindAsync(id);
+            //var product = await _context.Product.FindAsync(id);
+            var product = await _productRepository.GetByIdAsync(id ?? 0);
             if (product == null)
             {
                 return NotFound();
@@ -105,12 +103,11 @@ namespace ShoppingSystemWeb.Controllers
             {
                 try
                 {
-                    _context.Product.Update(product);
-                    await _context.SaveChangesAsync();
+                    await _productRepository.UpdateAsync(product);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!await ProductExists(product.Id))
                     {
                         return NotFound();
                     }
@@ -132,8 +129,8 @@ namespace ShoppingSystemWeb.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _productRepository.GetByIdAsync(id ?? 0);
+
             if (product == null)
             {
                 return NotFound();
@@ -145,17 +142,21 @@ namespace ShoppingSystemWeb.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int? id)
         {
-            var product = await _context.Product.FindAsync(id);
-            _context.Product.Remove(product);
-            await _context.SaveChangesAsync();
+            var product = await _productRepository.GetByIdAsync(id ?? 0);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            await _productRepository.DeleteAsync(product.Id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProductExists(int id)
+        private async ValueTask<bool> ProductExists(int id)
         {
-            return _context.Product.Any(e => e.Id == id);
+            var product = await _productRepository.GetByIdAsync(id);
+            return (product is not null);
         }
     }
 }
